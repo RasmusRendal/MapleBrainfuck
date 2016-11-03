@@ -1,0 +1,34 @@
+# (*
+# This is the programming language brainfuck in Maple. It works by the user typing bf("program"), and it will be intepreted. Cool beans, huh?
+# Brainfuck is a simple programming language with not a lot of functions. There are actually just eight:
+# 
+# > Move the instruction pointer up
+# < Move the instruction pointer down
+# + Increment the byte at the data pointer
+# - Decrement the byte at the data pointer
+# . Print the byte at the data pointer
+# , Accept one byte input, and store it's value in the data pointer
+# [ If the value at the data pointer is 0, instead of moving to the next instruction, move to the matching ]
+# ] If the value at the data pointer is not 0, instead of moving to the next instruction, move to the matching [
+# 
+# If you scroll down a bit, you'll see a hello world function.  *)
+> restart;# 
+;
+> increment := proc (x) options operator, arrow; x+1 end proc;
+> with(ListTools);
+[BinaryPlace, BinarySearch, Categorize, Classify, DotProduct, 
+
+  Enumerate, FindMaximalElement, FindMinimalElement, 
+
+  FindRepetitions, Flatten, FlattenOnce, Group, Interleave, Join, 
+
+  JoinSequence, LengthSplit, MakeUnique, Occurrences, Pad, 
+
+  PartialSums, Reverse, Rotate, Search, SearchAll, SelectFirst, 
+
+  SelectLast, Sorted, Split, Transpose]
+;
+> bf := proc (interpret, input)::string; local buffer, pointerLoc, instructions, instLoc, instSize, returnString; buffer := Array(0 .. 30000); pointerLoc := 1; instructions := convert(interpret, list); instLoc := 1; instSize := nops(instructions); returnString := ""; tmpcnt := 1; for a in input do buffer[tmpcnt] := a; tmpcnt := tmpcnt+1 end do; while instLoc <= instSize do c := instructions[instLoc]; if c = ">" then pointerLoc := increment(pointerLoc); instLoc := increment(instLoc) elif c = "<" then pointerLoc := pointerLoc-1; instLoc := increment(instLoc) elif c = "+" then buffer[pointerLoc] := buffer[pointerLoc]+1; instLoc := increment(instLoc) elif c = "-" then buffer[pointerLoc] := buffer[pointerLoc]-1; instLoc := increment(instLoc) elif c = "." then printf(convert([buffer[pointerLoc]], bytes)); returnString := cat(returnString, convert([buffer[pointerLoc]], bytes)); instLoc := increment(instLoc) elif c = "," then buffer[pointerLoc] := convert(readstat("Insert number"), bytes); instLoc := increment(instLoc) elif c = "[" then if buffer[pointerLoc] = 0 then search := [SearchAll("]", instructions)]; search := select(proc (x) options operator, arrow; instLoc < x end proc, search); matching := 1; while 0 < nops(select(proc (x) options operator, arrow; instLoc < x and x < search[matching] end proc, [SearchAll("[", instructions)])) do matching := increment(matching) end do; instLoc := search[matching] else instLoc := increment(instLoc) end if elif c = "]" then if buffer[pointerLoc] <> 0 then search := [SearchAll("[", instructions)]; search := select(proc (x) options operator, arrow; x < instLoc end proc, search); matching := 0; while 0 < nops(select(proc (x) options operator, arrow; search[nops(search)-matching] < x and x < instLocLoc end proc, [SearchAll("[", instructions)])) do matching := increment(matching) end do; instLoc := search[nops(search)-matching] else instLoc := increment(instLoc) end if else instLoc := increment(instLoc) end if end do; return returnString end proc;
+# #This is a hello world example. Have fun. 
+> bf("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.
+> ");
